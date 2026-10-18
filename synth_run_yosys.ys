@@ -1,0 +1,10 @@
+read_verilog -sv rtl/rv32i_core.sv
+hierarchy -check -top rv32i_core
+proc
+opt
+check
+stat
+synth -top rv32i_core
+check
+stat
+write_json synth/rv32i_core.json

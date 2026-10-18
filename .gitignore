@@ -1,0 +1,4 @@
+sim/*.vvp
+sim/*.vcd
+synth/*.json
+synth/*.log
