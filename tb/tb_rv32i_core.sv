@@ -84,24 +84,24 @@ module tb_rv32i_core;
         $dumpvars(0, tb_rv32i_core);
 
         for (i = 0; i < 64; i = i + 1) begin
-            imem[i] = 32'h00000013; // NOP
+            imem[i] = 32'h00000013; 
             dmem[i] = 32'b0;
         end
 
-        // Directed test program.
-        imem[0]  = enc_i(5,  0, 0, 1, 7'b0010011);          // addi x1,x0,5
-        imem[1]  = enc_i(7,  0, 0, 2, 7'b0010011);          // addi x2,x0,7
-        imem[2]  = enc_r(0,  2, 1, 0, 3, 7'b0110011);       // add x3,x1,x2
-        imem[3]  = enc_r(7'b0100000, 1, 3, 0, 4, 7'b0110011); // sub x4,x3,x1
-        imem[4]  = enc_s(0,  4, 0, 2, 7'b0100011);          // sw x4,0(x0)
-        imem[5]  = enc_i(0,  0, 2, 5, 7'b0000011);          // lw x5,0(x0)
-        imem[6]  = enc_r(0,  2, 5, 0, 6, 7'b0110011);       // add x6,x5,x2 (load-use)
-        imem[7]  = enc_b(8,  6, 6, 0, 7'b1100011);          // beq x6,x6,+8
-        imem[8]  = enc_i(99, 0, 0, 7, 7'b0010011);          // flushed, x7 must not become 99
-        imem[9]  = enc_j(8,  8, 7'b1101111);                // jal x8,+8; x8=PC+4
-        imem[10] = enc_i(88, 0, 0, 9, 7'b0010011);          // flushed by JAL
-        imem[11] = enc_i(11, 0, 0, 9, 7'b0010011);          // addi x9,x0,11
-        imem[12] = enc_j(0,  0, 7'b1101111);                // stable loop
+  
+        imem[0]  = enc_i(5,  0, 0, 1, 7'b0010011);         
+        imem[1]  = enc_i(7,  0, 0, 2, 7'b0010011);          
+        imem[2]  = enc_r(0,  2, 1, 0, 3, 7'b0110011);       
+        imem[3]  = enc_r(7'b0100000, 1, 3, 0, 4, 7'b0110011); 
+        imem[4]  = enc_s(0,  4, 0, 2, 7'b0100011);          
+        imem[5]  = enc_i(0,  0, 2, 5, 7'b0000011);       
+        imem[6]  = enc_r(0,  2, 5, 0, 6, 7'b0110011);     
+        imem[7]  = enc_b(8,  6, 6, 0, 7'b1100011);         
+        imem[8]  = enc_i(99, 0, 0, 7, 7'b0010011);         
+        imem[9]  = enc_j(8,  8, 7'b1101111);                
+        imem[10] = enc_i(88, 0, 0, 9, 7'b0010011);         
+        imem[11] = enc_i(11, 0, 0, 9, 7'b0010011);         
+        imem[12] = enc_j(0,  0, 7'b1101111);    
 
         repeat (3) @(posedge clk);
         @(negedge clk);
