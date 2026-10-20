@@ -13,7 +13,7 @@ module rv32i_core (
     input  logic [31:0] dmem_rdata
 );
 
-    localparam logic [31:0] NOP = 32'h00000013; // ADDI x0,x0,0
+    localparam logic [31:0] NOP = 32'h00000013; 
 
     logic [31:0] pc;
     logic [31:0] ifid_pc, ifid_instr;
@@ -60,11 +60,11 @@ module rv32i_core (
     function automatic logic uses_rs1(input logic [6:0] opcode);
         begin
             case (opcode)
-                7'b0110011, // R-type
-                7'b0010011, // I-type ALU
-                7'b0000011, // load
-                7'b0100011, // store
-                7'b1100011, // branch
+                7'b0110011,
+                7'b0010011, 
+                7'b0000011, 
+                7'b0100011,
+                7'b1100011,
                 7'b1100111: uses_rs1 = 1'b1;
                 default: uses_rs1 = 1'b0;
             endcase
@@ -74,8 +74,8 @@ module rv32i_core (
     function automatic logic uses_rs2(input logic [6:0] opcode);
         begin
             case (opcode)
-                7'b0110011, // R-type
-                7'b0100011, // store
+                7'b0110011, 
+                7'b0100011,
                 7'b1100011: uses_rs2 = 1'b1;
                 default: uses_rs2 = 1'b0;
             endcase
@@ -109,7 +109,6 @@ module rv32i_core (
                    memwb_valid && (memwb_rd == 5'd0) ? 32'b0 :
                    memwb_alu_result;
 
-        // Register-file read with same-cycle WB bypass.
         if (ifid_rs1 == 5'd0)
             id_rs1_value = 32'b0;
         else if (memwb_valid && memwb_regwrite && (memwb_rd == ifid_rs1))
@@ -125,8 +124,6 @@ module rv32i_core (
             id_rs2_value = regs[ifid_rs2];
     end
 
-    // Load-use interlock: stall only when the instruction in ID truly uses
-    // a source register that is the destination of the load in EX.
     always_comb begin
         stall = 1'b0;
         if (ifid_valid && idex_valid &&
@@ -143,7 +140,6 @@ module rv32i_core (
     assign ex_funct7 = idex_instr[31:25];
     assign ex_rd     = idex_rd;
 
-    // EX-stage forwarding. Priority: newest value in EX/MEM, then MEM/WB.
     always_comb begin
         ex_rs1_value = idex_rs1_value;
         ex_rs2_value = idex_rs2_value;
@@ -174,7 +170,6 @@ module rv32i_core (
         ex_branch_target = idex_pc + idex_imm;
 
         case (ex_opcode)
-            // R-type arithmetic and logic
             7'b0110011: begin
                 case (ex_funct3)
                     3'b000: begin
@@ -226,7 +221,6 @@ module rv32i_core (
                 endcase
             end
 
-            // Immediate arithmetic and logic
             7'b0010011: begin
                 case (ex_funct3)
                     3'b000: begin
@@ -273,7 +267,6 @@ module rv32i_core (
                 endcase
             end
 
-            // Word load
             7'b0000011: begin
                 if (ex_funct3 == 3'b010) begin
                     ex_regwrite = 1'b1;
@@ -283,7 +276,6 @@ module rv32i_core (
                 end
             end
 
-            // Word store
             7'b0100011: begin
                 if (ex_funct3 == 3'b010) begin
                     ex_memwrite = 1'b1;
@@ -291,7 +283,6 @@ module rv32i_core (
                 end
             end
 
-            // Conditional branches
             7'b1100011: begin
                 case (ex_funct3)
                     3'b000: ex_branch_taken = (ex_rs1_value == ex_rs2_value);
@@ -307,14 +298,12 @@ module rv32i_core (
                     default: ex_branch_taken = 1'b0;
                 endcase
             end
-
-            // JAL
+            
             7'b1101111: begin
                 ex_regwrite = 1'b1;
                 ex_alu_result = idex_pc + 32'd4;
             end
-
-            // JALR
+            
             7'b1100111: begin
                 if (ex_funct3 == 3'b000) begin
                     ex_regwrite = 1'b1;
@@ -322,13 +311,11 @@ module rv32i_core (
                 end
             end
 
-            // LUI
             7'b0110111: begin
                 ex_regwrite = 1'b1;
                 ex_alu_result = idex_imm;
             end
 
-            // AUIPC
             7'b0010111: begin
                 ex_regwrite = 1'b1;
                 ex_alu_result = idex_pc + idex_imm;
