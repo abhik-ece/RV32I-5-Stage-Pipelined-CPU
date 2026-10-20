@@ -84,43 +84,41 @@ module tb_rv32i_control;
         $dumpvars(0, tb_rv32i_control);
 
         for (i = 0; i < 64; i = i + 1) begin
-            imem[i] = 32'h00000013; // NOP
+            imem[i] = 32'h00000013; 
             dmem[i] = 32'b0;
         end
 
-        // Directed test program.
-        imem[0]  = enc_i(5,  0, 0, 1, 7'b0010011);          // addi x1,x0,5
-        imem[1]  = enc_i(7,  0, 0, 2, 7'b0010011);          // addi x2,x0,7
-        imem[2]  = enc_r(0,  2, 1, 0, 3, 7'b0110011);       // add x3,x1,x2
-        imem[3]  = enc_r(7'b0100000, 1, 3, 0, 4, 7'b0110011); // sub x4,x3,x1
-        imem[4]  = enc_s(0,  4, 0, 2, 7'b0100011);          // sw x4,0(x0)
-        imem[5]  = enc_i(0,  0, 2, 5, 7'b0000011);          // lw x5,0(x0)
-        imem[6]  = enc_r(0,  2, 5, 0, 6, 7'b0110011);       // add x6,x5,x2 (load-use)
-        imem[7]  = enc_b(8,  6, 6, 0, 7'b1100011);          // beq x6,x6,+8
-        imem[8]  = enc_i(99, 0, 0, 7, 7'b0010011);          // flushed, x7 must not become 99
-        imem[9]  = enc_j(8,  8, 7'b1101111);                // jal x8,+8; x8=PC+4
-        imem[10] = enc_i(88, 0, 0, 9, 7'b0010011);          // flushed by JAL
-        imem[11] = enc_i(11, 0, 0, 9, 7'b0010011);          // addi x9,x0,11
-        // Signed and unsigned branch tests
-        imem[12] = enc_i(-1, 0, 0, 10, 7'b0010011);       // x10 = -1
-        imem[13] = enc_i(1,  0, 0, 11, 7'b0010011);       // x11 = 1
-        imem[14] = enc_b(8, 11, 10, 4, 7'b1100011);       // BLT: taken
-        imem[15] = enc_i(99, 0, 0, 12, 7'b0010011);       // must be skipped
+        imem[0]  = enc_i(5,  0, 0, 1, 7'b0010011);          
+        imem[1]  = enc_i(7,  0, 0, 2, 7'b0010011);          
+        imem[2]  = enc_r(0,  2, 1, 0, 3, 7'b0110011);      
+        imem[3]  = enc_r(7'b0100000, 1, 3, 0, 4, 7'b0110011); 
+        imem[4]  = enc_s(0,  4, 0, 2, 7'b0100011);       
+        imem[5]  = enc_i(0,  0, 2, 5, 7'b0000011);       
+        imem[6]  = enc_r(0,  2, 5, 0, 6, 7'b0110011);     
+        imem[7]  = enc_b(8,  6, 6, 0, 7'b1100011);         
+        imem[8]  = enc_i(99, 0, 0, 7, 7'b0010011);         
+        imem[9]  = enc_j(8,  8, 7'b1101111);              
+        imem[10] = enc_i(88, 0, 0, 9, 7'b0010011);        
+        imem[11] = enc_i(11, 0, 0, 9, 7'b0010011);         
+        imem[12] = enc_i(-1, 0, 0, 10, 7'b0010011);  
+        imem[13] = enc_i(1,  0, 0, 11, 7'b0010011);     
+        imem[14] = enc_b(8, 11, 10, 4, 7'b1100011);     
+        imem[15] = enc_i(99, 0, 0, 12, 7'b0010011);      
         imem[16] = enc_i(13, 0, 0, 13, 7'b0010011);
-        imem[17] = enc_b(8, 10, 11, 5, 7'b1100011);       // BGE: taken
-        imem[18] = enc_i(99, 0, 0, 14, 7'b0010011);       // must be skipped
+        imem[17] = enc_b(8, 10, 11, 5, 7'b1100011);     
+        imem[18] = enc_i(99, 0, 0, 14, 7'b0010011);       
         imem[19] = enc_i(15, 0, 0, 15, 7'b0010011);
-        imem[20] = enc_b(8, 11, 10, 6, 7'b1100011);       // BLTU: not taken
+        imem[20] = enc_b(8, 11, 10, 6, 7'b1100011);       
         imem[21] = enc_i(16, 0, 0, 16, 7'b0010011);
-        imem[22] = enc_b(8, 11, 10, 7, 7'b1100011);       // BGEU: taken
-        imem[23] = enc_i(99, 0, 0, 17, 7'b0010011);       // must be skipped
+        imem[22] = enc_b(8, 11, 10, 7, 7'b1100011);       
+        imem[23] = enc_i(99, 0, 0, 17, 7'b0010011);      
         imem[24] = enc_i(18, 0, 0, 18, 7'b0010011);
-        imem[25] = enc_i(116, 0, 0, 19, 7'b0010011);      // JALR target
-        imem[26] = enc_i(0, 19, 0, 20, 7'b1100111);       // JALR
-        imem[27] = enc_i(99, 0, 0, 21, 7'b0010011);       // must be skipped
-        imem[28] = enc_i(88, 0, 0, 22, 7'b0010011);       // must be skipped
-        imem[29] = enc_i(23, 0, 0, 23, 7'b0010011);       // JALR target
-        imem[30] = enc_j(0, 0, 7'b1101111);               // stable loop
+        imem[25] = enc_i(116, 0, 0, 19, 7'b0010011);      
+        imem[26] = enc_i(0, 19, 0, 20, 7'b1100111);       
+        imem[27] = enc_i(99, 0, 0, 21, 7'b0010011);       
+        imem[28] = enc_i(88, 0, 0, 22, 7'b0010011);       
+        imem[29] = enc_i(23, 0, 0, 23, 7'b0010011);       
+        imem[30] = enc_j(0, 0, 7'b1101111);   
 
         repeat (3) @(posedge clk);
         @(negedge clk);
